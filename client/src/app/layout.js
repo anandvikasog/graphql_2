@@ -1,9 +1,4 @@
-import { ApolloProvider, ApolloClient, InMemoryCache } from "@apollo/client";
-
-const client = new ApolloClient({
-  uri: "http://localhost:5000/graphql",
-  cache: new InMemoryCache(),
-});
+import Providers from "@/utils/providers";
 
 export const metadata = {
   title: "Next.js",
@@ -14,7 +9,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
-        <ApolloProvider client={client}>{children}</ApolloProvider>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

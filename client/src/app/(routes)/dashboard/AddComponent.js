@@ -1,7 +1,5 @@
 "use client";
 
-import { ADD_PROJECT } from "@/gql/mutations";
-import { useMutation } from "@apollo/client";
 import {
   Button,
   Grid,
@@ -11,20 +9,58 @@ import {
   Typography,
 } from "@mui/material";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useMutation } from "@apollo/client";
+import { ADD_PROJECT } from "@/gql/mutations";
+import { GET_PROJECTS } from "@/gql/queries";
 
-const AddComponent = ({ handleClose }) => {
+const AddComponent = ({ handleClose, userData }) => {
   const [newTopic, setNewTopic] = useState({
     name: "",
     description: "",
     status: "new",
   });
-  const [addProject] = useMutation(ADD_PROJECT);
+
+  const [addProject, { data: addResponse }] = useMutation(ADD_PROJECT, {
+    variables: {
+      name: newTopic.name,
+      description: newTopic.description,
+      status: newTopic.status,
+      clientId: userData.id,
+    },
+    // update(cache, { data: { addProject } }) {
+    //   const { getProjects } = cache.readQuery({ query: GET_PROJECTS });
+
+    //   cache.writeQuery({
+    //     query: GET_PROJECTS,
+    //     data: { getProjects: [...getProjects, addProject.data] },
+    //   });
+    // },
+    refetchQueries: [
+      { query: GET_PROJECTS, variables: { clientId: userData.id } },
+    ],
+  });
 
   const handleSubmit = () => {
-    addProject()
-    handleClose();
+    const { name, description, status } = newTopic;
+    if (!name || !description || !status) {
+      alert("All fields are required!");
+      return;
+    }
+    addProject();
   };
+
+  useEffect(() => {
+    if (addResponse && addResponse?.addProject) {
+      const { message, status, data } = addResponse.addProject;
+      alert(message);
+      if (status) {
+        const { name, description, status, id, client } = data;
+        handleClose();
+      }
+    }
+  }, [addResponse]);
+
   return (
     <Grid
       container

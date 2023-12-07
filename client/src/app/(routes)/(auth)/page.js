@@ -1,12 +1,27 @@
 "use client";
 
 import { Button, Grid } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import LoginForm from "./Login";
 import SignupForm from "./Signup";
+import { useRouter } from "next/navigation";
+import withAuth from "@/utils/hoc/withAuth";
 
 const Page = () => {
+  const router = useRouter();
   const [formLayout, setFormLayout] = useState("login");
+
+  // useEffect(() => {
+  //   const name = localStorage.getItem("name");
+  //   const email = localStorage.getItem("email");
+  //   const id = localStorage.getItem("id");
+
+  //   if (name && email && id) {
+  //     router.push("/dashboard");
+  //     return;
+  //   }
+  // }, []);
+
   return (
     <Grid
       sx={{
@@ -15,7 +30,11 @@ const Page = () => {
         alignItems: "center",
       }}
     >
-      {formLayout === "login" ? <LoginForm /> : <SignupForm />}
+      {formLayout === "login" ? (
+        <LoginForm setFormLayout={setFormLayout} />
+      ) : (
+        <SignupForm setFormLayout={setFormLayout} />
+      )}
       <Grid
         sx={{
           marginTop: "30px",
@@ -31,4 +50,4 @@ const Page = () => {
   );
 };
 
-export default Page;
+export default withAuth(Page, false);

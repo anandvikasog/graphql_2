@@ -79,37 +79,7 @@ const ProjectDeleteResultType = new GraphQLObjectType({
 const queries = new GraphQLObjectType({
   name: "Queries",
   fields: {
-    // clients: {
-    //   type: new GraphQLList(ClientType),
-    //   resolve: async () => {
-    //     const result = await Client.find();
-    //     return result;
-    //   },
-    // },
-    clientLogin: {
-      type: ClientCreateResultType,
-      args: { email: { type: GraphQLNonNull(GraphQLString) } },
-      resolve: async (parent, args) => {
-        const result = await Client.findOne({ email: args.email });
-        if(!result){
-          return {
-            status: false,
-            message: "User not exists"
-          }
-        }
-        return {
-          status: true,
-          message: "Logged in successfully",
-          data: {
-            name: result.name,
-            email: result.email,
-            phone: result.phone,
-            id: result._id
-          }
-        };
-      },
-    },
-    projects: {
+    getProjects: {
       type: new GraphQLList(ProjectType),
       args: { clientId: { type: GraphQLID } },
       resolve: async (parent, args) => {
@@ -117,7 +87,7 @@ const queries = new GraphQLObjectType({
         return result;
       },
     },
-    project: {
+    getProject: {
       type: ProjectType,
       args: { id: { type: GraphQLID } },
       resolve: async (parent, args) => {
@@ -164,6 +134,29 @@ const mutations = new GraphQLObjectType({
           status: true,
           message: "Client created successfully",
           data: result,
+        };
+      },
+    },
+    clientLogin: {
+      type: ClientCreateResultType,
+      args: { email: { type: GraphQLNonNull(GraphQLString) } },
+      resolve: async (parent, args) => {
+        const result = await Client.findOne({ email: args.email });
+        if (!result) {
+          return {
+            status: false,
+            message: "User not exists",
+          };
+        }
+        return {
+          status: true,
+          message: "Logged in successfully",
+          data: {
+            name: result.name,
+            email: result.email,
+            phone: result.phone,
+            id: result._id,
+          },
         };
       },
     },

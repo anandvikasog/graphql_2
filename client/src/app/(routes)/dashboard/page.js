@@ -1,43 +1,18 @@
 "use client";
 
 import { Box, Button, Grid, Modal, Typography } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import ListComponent from "./ListComponent";
 import AddComponent from "./AddComponent";
 import Loader from "./Loader";
 import { useRouter } from "next/navigation";
 import { style } from "./modalStyle";
+import withAuth from "@/utils/hoc/withAuth";
 
-const Page = () => {
+const Page = ({ userData }) => {
+  console.log("userData", userData);
   const router = useRouter();
-  const [isAuth, setIsAuth] = useState(true);
-  const [userData, setUserData] = useState(null);
   const [open, setOpen] = useState(false);
-
-  useEffect(() => {
-    // const name = localStorage.getItem("name");
-    // const email = localStorage.getItem("email");
-    // const id = localStorage.getItem("id");
-
-    // if (!name || !email || !id) {
-    //   router.push("/");
-    //   return;
-    // }
-
-    // setUserData({
-    //   name,
-    //   email,
-    //   id,
-    // });
-
-    setUserData({
-      name: "Vikas",
-      email: "vikas@yopmail.com",
-      id: "123456",
-    });
-
-    setIsAuth(true);
-  }, []);
 
   const logoutHandler = () => {
     localStorage.clear();
@@ -56,15 +31,15 @@ const Page = () => {
         gap: "20px",
       }}
     >
-      {!isAuth ? (
+      {!userData ? (
         <Loader />
       ) : (
         <>
           <Typography align="center" variant="h4">
-            Hi, {userData?.name || "Guest"}
+            Hi, {userData.name}
           </Typography>
           <Grid>
-            <ListComponent />
+            <ListComponent userData={userData} />
           </Grid>
           <Grid
             sx={{
@@ -87,7 +62,7 @@ const Page = () => {
             aria-describedby="modal-modal-description"
           >
             <Box sx={style}>
-              <AddComponent handleClose={handleClose} />
+              <AddComponent handleClose={handleClose} userData={userData} />
             </Box>
           </Modal>
         </>
@@ -96,6 +71,4 @@ const Page = () => {
   );
 };
 
-
-
-export default Page;
+export default withAuth(Page, true);

@@ -1,16 +1,43 @@
 "use client";
 
 import { Button, Grid, TextField, Typography } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useMutation } from "@apollo/client";
+import { ADD_CLIENT } from "@/gql/mutations";
 
-const SignupForm = () => {
+const SignupForm = ({ setFormLayout }) => {
   const [fieldValues, setFieldValues] = useState({
     name: "",
     email: "",
     phone: "",
   });
 
-  const handleSubmit = () => {};
+  const [addClient, { data }] = useMutation(ADD_CLIENT, {
+    variables: {
+      name: fieldValues.name,
+      email: fieldValues.email,
+      phone: fieldValues.phone,
+    },
+  });
+
+  const handleSubmit = () => {
+    const { name, email, phone } = fieldValues;
+    if (!name || !email || !phone) {
+      alert("All fields are required!");
+      return;
+    }
+    addClient();
+  };
+
+  useEffect(() => {
+    if (data && data?.addClient) {
+      const { message, status } = data.addClient;
+      alert(message);
+      if (status) {
+        setFormLayout && setFormLayout("login");
+      }
+    }
+  }, [data]);
   return (
     <Grid
       sx={{
